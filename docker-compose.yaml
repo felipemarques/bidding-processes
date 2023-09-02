@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  bidding:
+    build: .
+    image: node-ct
+    entrypoint: .docker/entrypoint.sh
+    container_name: bidding-processes
+    environment:
+      - MONGODB_URL=${MONGODB_URL}
+    ports:
+      - '3000:3000'
+    depends_on:
+      - mongodb
+    volumes:
+      - .:/home/node/app
+    networks:
+      - bp-network
+
+  mongodb:
+    image: mongo:6-jammy
+    ports:
+      - '27017:27017'
+    volumes:
+      - bpmongo:/data/db
+    networks:
+      - bp-network
+
+volumes:
+  bpdata:
+  bpmongo:
+
+networks:
+  bp-network:
+    driver: bridge
