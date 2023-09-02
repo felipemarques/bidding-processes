@@ -5,6 +5,7 @@ import { MongooseModule } from '@nestjs/mongoose'
 import { BatchOperation } from 'src/schemas/batch-process.schema'
 import { ImportedProcess } from 'src/schemas/imported-process.schema'
 import { BatchOperationService } from 'src/services/batchOperation.service'
+import { PaginationModule } from 'src/shared/pagination/pagination.module'
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { BatchOperationService } from 'src/services/batchOperation.service'
         schema: ImportedProcess,
       },
     ]),
+    PaginationModule,
   ],
   controllers: [BiddingController],
   providers: [PublicPortalService, BatchOperationService],
