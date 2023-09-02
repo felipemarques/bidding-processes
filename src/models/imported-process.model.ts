@@ -1,6 +1,6 @@
 import { Document } from 'mongoose'
 
-interface Item {
+export interface ImportedItem {
   // quantidade
   amount: number
   // valorReferencia
@@ -27,7 +27,7 @@ export interface ImportedProcess extends Document {
   statusCode: number
   // dataHoraInicioLances (Data de início do processo)
   dateTimeStartBids: Date
-  items?: Array<Item>
+  items?: Array<ImportedItem>
   createdAt: Date
   updatedAt: Date
 }
