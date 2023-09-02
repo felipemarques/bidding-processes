@@ -29,7 +29,7 @@ export class BiddingController {
   }
 
   @Post('start-extration')
-  startBatch(): Promise<void> {
-    return this.batchService.startExtration()
+  startBatch(): void {
+    this.batchService.startExtration()
   }
 }

@@ -14,4 +14,6 @@ export interface BatchOperation extends Document {
   deleted?: number
   createdAt: Date
   updatedAt: Date
+  progress?: string
+  error?: string
 }

@@ -17,6 +17,12 @@ export const BatchOperation = new Schema(
     deleted: {
       type: Number,
     },
+    progress: {
+      type: String,
+    },
+    error: {
+      type: String,
+    },
   },
   { timestamps: true, versionKey: false },
 )

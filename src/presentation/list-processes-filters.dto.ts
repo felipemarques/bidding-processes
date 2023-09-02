@@ -31,6 +31,6 @@ export type ListProcessesParams = {
   codigoStatus?: StatusFilter
   codigoUf?: number
   filtroOrdenacao?: OrderFilter
-  filtroEspecial?: number
+  filtroEspecial?: EspecialFilter
   pagina: number
 }
