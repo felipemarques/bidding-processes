@@ -6,7 +6,7 @@ import { ListItemsParams } from 'src/presentation/list-items-filters.dto'
 import { ListItemsDto } from 'src/presentation/list-items.dto'
 
 @Injectable()
-export class BiddingService {
+export class PublicPortalService {
   private httpClient: AxiosInstance
   private readonly biddingUri = '/v2/licitacao'
   constructor() {

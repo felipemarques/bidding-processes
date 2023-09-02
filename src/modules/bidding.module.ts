@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common'
 import { BiddingController } from 'src/controllers/bidding.controller'
-import { BiddingService } from 'src/services/bidding.service'
+import { PublicPortalService } from 'src/services/public-portal.service'
 import { MongooseModule } from '@nestjs/mongoose'
 import { BatchOperation } from 'src/schemas/batch-process.schema'
-import { BatchOperationService } from 'src/services/batchOperation.service'
 import { ImportedProcess } from 'src/schemas/imported-process.schema'
+import { BatchOperationService } from 'src/services/batchOperation.service'
 
 @Module({
   imports: [
@@ -20,6 +20,6 @@ import { ImportedProcess } from 'src/schemas/imported-process.schema'
     ]),
   ],
   controllers: [BiddingController],
-  providers: [BiddingService, BatchOperationService],
+  providers: [PublicPortalService, BatchOperationService],
 })
 export class BiddingModule {}

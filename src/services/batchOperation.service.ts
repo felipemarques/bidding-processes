@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { Model } from 'mongoose'
 import { v4 as uuidV4 } from 'uuid'
-import { BiddingService } from './bidding.service'
+import { PublicPortalService } from './public-portal.service'
 import {
   BatchOperation,
   BatchOperationStatus,
@@ -12,7 +12,7 @@ import { EspecialFilter } from 'src/presentation/list-processes-filters.dto'
 import { Process } from 'src/presentation/list-processes.dto'
 
 @Injectable()
-export class BatchOperationService extends BiddingService {
+export class BatchOperationService extends PublicPortalService {
   constructor(
     @InjectModel('BatchOperation')
     private readonly batchModel: Model<BatchOperation>,
@@ -65,8 +65,6 @@ export class BatchOperationService extends BiddingService {
 
       hasMore = page !== pageCount
     } while (hasMore)
-
-    console.log('finished')
   }
 
   private bindProcessValues(process: Process): Partial<ImportedProcess> {
