@@ -5,8 +5,8 @@ import { BatchOperationService } from 'src/services/batchOperation.service'
 export class BiddingController {
   constructor(private readonly batchService: BatchOperationService) {}
 
-  @Post('start-extration')
+  @Post('start-extraction')
   startBatch(): void {
-    this.batchService.startExtration()
+    this.batchService.startExtraction()
   }
 }
