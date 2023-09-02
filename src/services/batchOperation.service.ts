@@ -39,17 +39,27 @@ export class BatchOperationService extends PublicPortalService {
     }
   }
 
+  private async createBatch(): Promise<BatchOperation> {
+    const newBatch = {
+      id: uuidV4(),
+      status: BatchOperationStatus.IN_PROGRESS,
+    }
+    const batch = new this.batchModel(newBatch)
+    await batch.save()
+    return batch
+  }
+
   private async extract(batch: BatchOperation): Promise<void> {
     const iterations = this.getAllProcesses()
     let created = 0
     let changed = 0
-    const ids = []
+    const existingIds = []
 
     for await (const { processes, progress } of iterations) {
       await Promise.all(
         processes.map(async (process) => {
           const { isNew, id } = await this.saveProcess(process)
-          ids.push(id)
+          existingIds.push(id)
           if (isNew) {
             created++
           } else {
@@ -63,41 +73,10 @@ export class BatchOperationService extends PublicPortalService {
       batch.changed = changed
       await batch.save()
     }
-  }
 
-  private async saveProcess(process: Process): Promise<{
-    isNew: boolean
-    id: number
-  }> {
-    const items = await this.getAllItems(process.codigoLicitacao)
-
-    const result = await this.importedProcessModel.findOneAndUpdate(
-      {
-        biddingCode: process.codigoLicitacao,
-      },
-      this.bindProcessValues(process, items),
-      {
-        upsert: true,
-        runValidators: false,
-        new: true,
-        projection: { biddingCode: true, createdAt: true, updatedAt: true },
-      },
-    )
-
-    return {
-      isNew: result.createdAt === result.updatedAt,
-      id: result.biddingCode,
-    }
-  }
-
-  private async createBatch(): Promise<BatchOperation> {
-    const newBatch = {
-      id: uuidV4(),
-      status: BatchOperationStatus.IN_PROGRESS,
-    }
-    const batch = new this.batchModel(newBatch)
+    const deleetedProcesses = await this.deleteProcesses(existingIds)
+    batch.deleted = deleetedProcesses
     await batch.save()
-    return batch
   }
 
   private async *getAllProcesses(): AsyncGenerator<{
@@ -114,13 +93,30 @@ export class BatchOperationService extends PublicPortalService {
         filtroEspecial: EspecialFilter.NEXT_30_DAYS,
       })
 
-      hasMore = page !== 5
+      hasMore = page !== pageCount
 
       yield {
         processes: result,
         progress: `${page}/${pageCount}`,
       }
     } while (hasMore)
+  }
+
+  private async saveProcess(process: Process): Promise<{
+    isNew: boolean
+    id: number
+  }> {
+    const items = await this.getAllItems(process.codigoLicitacao)
+
+    const result = await this.createOrUpdateProcess(
+      process.codigoLicitacao,
+      this.bindProcessValues(process, items),
+    )
+
+    return {
+      isNew: result.createdAt.toISOString() === result.updatedAt.toISOString(),
+      id: result.biddingCode,
+    }
   }
 
   private async getAllItems(processId: number): Promise<Item[]> {
@@ -149,6 +145,24 @@ export class BatchOperationService extends PublicPortalService {
     return items
   }
 
+  private async createOrUpdateProcess(
+    biddingCode: number,
+    process: Partial<ImportedProcess>,
+  ): Promise<Partial<ImportedProcess>> {
+    return this.importedProcessModel.findOneAndUpdate<Partial<ImportedProcess>>(
+      {
+        biddingCode,
+      },
+      process,
+      {
+        upsert: true,
+        runValidators: false,
+        new: true,
+        projection: { biddingCode: true, createdAt: true, updatedAt: true },
+      },
+    )
+  }
+
   private bindProcessValues(
     process: Process,
     items: Item[],
@@ -173,5 +187,13 @@ export class BatchOperationService extends PublicPortalService {
       participationCode: item.participacao.codigo,
       code: item.codigo,
     }
+  }
+
+  private async deleteProcesses(existingIds: string[]): Promise<number> {
+    const { deletedCount } = await this.importedProcessModel.deleteMany({
+      biddingCode: { $nin: existingIds },
+    })
+
+    return deletedCount
   }
 }
