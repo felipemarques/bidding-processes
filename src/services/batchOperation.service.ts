@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common'
+import { Injectable, Logger } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { Model } from 'mongoose'
 import { v4 as uuidV4 } from 'uuid'
@@ -17,6 +17,7 @@ import { Item } from 'src/presentation/list-items.dto'
 
 @Injectable()
 export class BatchOperationService extends PublicPortalService {
+  private readonly logger = new Logger(BatchOperationService.name)
   constructor(
     @InjectModel('BatchOperation')
     private readonly batchModel: Model<BatchOperation>,
@@ -27,22 +28,39 @@ export class BatchOperationService extends PublicPortalService {
   }
 
   public async startExtraction(): Promise<void> {
+    this.logger.log('Starting batch extraction')
     const batch = await this.createBatch()
-    try {
-      await this.extract(batch)
-      batch.status = BatchOperationStatus.FINISHED
-      await batch.save()
-    } catch (error) {
-      batch.error = error.message
-      batch.status = BatchOperationStatus.FINISHED_WITH_ERROR
-      await batch.save()
+    if (batch.status === BatchOperationStatus.IN_PROGRESS) {
+      try {
+        await this.extract(batch)
+        batch.status = BatchOperationStatus.FINISHED
+        await batch.save()
+        this.logger.log('Batch extraction finished')
+      } catch (error) {
+        this.logger.error(error)
+        batch.message = error.message
+        batch.status = BatchOperationStatus.FINISHED_WITH_ERROR
+        await batch.save()
+      }
     }
   }
 
   private async createBatch(): Promise<BatchOperation> {
+    this.logger.debug('Creating new batch operation')
+    const inProgressBatch = await this.batchModel.findOne({
+      status: BatchOperationStatus.IN_PROGRESS,
+    })
+    if (inProgressBatch) {
+      this.logger.log('There is already a batch operation in progress')
+    }
     const newBatch = {
       id: uuidV4(),
-      status: BatchOperationStatus.IN_PROGRESS,
+      status: inProgressBatch
+        ? BatchOperationStatus.STOPED
+        : BatchOperationStatus.IN_PROGRESS,
+      ...(inProgressBatch
+        ? { message: 'There is already a batch operation in progress' }
+        : {}),
     }
     const batch = new this.batchModel(newBatch)
     await batch.save()
@@ -56,6 +74,7 @@ export class BatchOperationService extends PublicPortalService {
     const existingIds = []
 
     for await (const { processes, progress } of iterations) {
+      this.logger.debug(`Saving ${processes.length} processes`)
       await Promise.all(
         processes.map(async (process) => {
           const { isNew, id } = await this.saveProcess(process)
@@ -88,6 +107,7 @@ export class BatchOperationService extends PublicPortalService {
 
     do {
       page++
+      this.logger.debug(`Getting bidding processes. page: ${page}`)
       const { result, pageCount } = await this.listProcesses({
         pagina: page,
         filtroEspecial: EspecialFilter.NEXT_30_DAYS,

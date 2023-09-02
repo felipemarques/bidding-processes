@@ -21,5 +21,6 @@ import { BatchOperationService } from 'src/services/batchOperation.service'
   ],
   controllers: [BiddingController],
   providers: [PublicPortalService, BatchOperationService],
+  exports: [BatchOperationService],
 })
 export class BiddingModule {}
