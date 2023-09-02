@@ -6,6 +6,7 @@ import { BatchOperation } from 'src/schemas/batch-process.schema'
 import { ImportedProcess } from 'src/schemas/imported-process.schema'
 import { BatchOperationService } from 'src/services/batchOperation.service'
 import { PaginationModule } from 'src/shared/pagination/pagination.module'
+import { ProcessService } from 'src/services/process.service'
 
 @Module({
   imports: [
@@ -22,7 +23,7 @@ import { PaginationModule } from 'src/shared/pagination/pagination.module'
     PaginationModule,
   ],
   controllers: [BiddingController],
-  providers: [PublicPortalService, BatchOperationService],
+  providers: [PublicPortalService, BatchOperationService, ProcessService],
   exports: [BatchOperationService],
 })
 export class BiddingModule {}
