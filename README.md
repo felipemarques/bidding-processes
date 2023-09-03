@@ -13,6 +13,10 @@ cp .env.example .env
 docker compose up -d
 ```
 
+After running these commands you will be able to use the api!
+
+* Visualize it easily with the Swagger UI on http://localhost:3000/docs
+
 
 ## Available routes
 
