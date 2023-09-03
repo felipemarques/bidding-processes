@@ -26,12 +26,12 @@ export class ListProcessQueryDto {
   @Transform(({ value }) => parseInt(value))
   @IsInt()
   @IsOptional()
-  @ApiProperty({ required: false })
+  @ApiProperty({ required: false, default: 1 })
   page: number = 1
 
   @Transform(({ value }) => parseInt(value))
   @IsInt()
   @IsOptional()
-  @ApiProperty({ required: false })
+  @ApiProperty({ required: false, default: 25 })
   take: number = 25
 }
