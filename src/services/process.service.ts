@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { ImportedProcess } from 'src/models/imported-process.model'
 import { Model } from 'mongoose'
-import { PaginationService } from 'src/shared/pagination/pagination.service'
+import { PaginationService } from 'src/services/pagination.service'
 import { ListProcessQueryDto } from 'src/dto/list-process-query.dto'
 
 @Injectable()

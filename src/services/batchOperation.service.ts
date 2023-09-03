@@ -11,9 +11,9 @@ import {
   ImportedItem,
   ImportedProcess,
 } from 'src/models/imported-process.model'
-import { EspecialFilter } from 'src/presentation/list-processes-filters.dto'
-import { Process } from 'src/presentation/list-processes.dto'
-import { Item } from 'src/presentation/list-items.dto'
+import { Item } from 'src/dto/list-items.dto'
+import { EspecialFilter } from 'src/dto/list-processes-filters.dto'
+import { Process } from 'src/dto/list-processes.dto'
 
 @Injectable()
 export class BatchOperationService extends PublicPortalService {

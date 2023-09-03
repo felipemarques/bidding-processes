@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common'
 import axios, { AxiosInstance } from 'axios'
-import { ListProcessesDto, Process } from 'src/presentation/list-processes.dto'
-import { ListProcessesParams } from 'src/presentation/list-processes-filters.dto'
-import { ListItemsParams } from 'src/presentation/list-items-filters.dto'
-import { ListItemsDto } from 'src/presentation/list-items.dto'
+import { ListItemsParams } from 'src/dto/list-items-filters.dto'
+import { ListItemsDto } from 'src/dto/list-items.dto'
+import { ListProcessesParams } from 'src/dto/list-processes-filters.dto'
+import { ListProcessesDto, Process } from 'src/dto/list-processes.dto'
 
 @Injectable()
 export class PublicPortalService {
